@@ -1,16 +1,18 @@
 #include<stdio.h>
 #include<string.h>
-
+#include<fcntl.h>
 int main(){
 
-	int i;
+
 	char str[100];
-	printf("Enter a string: ");
-	scanf("%s", str);
-	for(i=0; i<10; ++i)
-		printf("char at %d is %c\n", i, str[i]);
-	printf("strlen is %d", strlen(str));
-	printf("str[strlen-1] is %c\n", str[strlen(str)-1]);
-	printf("str[strlen-2] is %c\n", str[strlen(str)-2]);
+	int fd = open("foolo.txt", O_RDONLY, 1);
+	int nbytes = read(fd, str, 16);
+	printf("nbytes = %d\n %s\n", nbytes, str);
+	nbytes = read(fd, str, 10);
+	printf("nbytes = %d\n %s\n", nbytes, str);
+
+
+
+
 	return 0;
 }
