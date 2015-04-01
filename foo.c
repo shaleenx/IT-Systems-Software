@@ -21,7 +21,7 @@ int main(){
   int p[4][2], i, nbytes, mbytes;
 
   for(i=0; i<4; ++i)
-    if(pipe(p[i]<0))   /* Creating 4 pipes, as required */
+    if(pipe(p[i])<0)   /* Creating 4 pipes, as required */
        exit(1);
 
   if(fork() == 0){ /* Child Process 1 */
@@ -33,6 +33,7 @@ int main(){
   }
   else if(fork() == 0){ /* Child Process 2 */
     close(p[1][1]);
+    close(p[3][1]);
     while( (nbytes = read(p[1][0], inbuf, MSGSIZE)) > 0 || (mbytes = read(p[3][0], inbuf, MSGSIZE)) > 0){
       if(inbuf[strlen(inbuf)-1] == '#'){
 	inbuf[strlen(inbuf)-1] = '\n';
@@ -47,6 +48,7 @@ int main(){
   }
   else if(fork() == 0){ /* Child Process 3 */
     close(p[1][1]);
+    close(p[2][1]);
     while( (nbytes = read(p[1][0], inbuf, MSGSIZE)) >0 ||  (mbytes = read(p[2][0], inbuf, MSGSIZE)) > 0){
       if(inbuf[strlen(inbuf)-1] == '*'){
 	inbuf[strlen(inbuf)-1] = '\n';
@@ -75,13 +77,11 @@ int main(){
 	write(p[0][1], str, MSGSIZE);
 	break;
       case 2:
-	if(cno == 3)
-	  strcat(str, "#"); /* '#' will signify whether it is meant for C2 or not. # = C2. * = C3 */
+	strcat(str, "#"); /* '#' will signify whether it is meant for C2 or not. # = C2. * = C3 */
 	write(p[1][1], str, MSGSIZE);
 	break;
-      case 3:
-	if(cno == 2)
-	  strcat(str, "*"); /* '*' will signify whether it is meant for C3 or not. # = C2. * = C3 */
+     case 3:
+	strcat(str, "*");
 	write(p[1][1], str, MSGSIZE);
 	break;
       default:
